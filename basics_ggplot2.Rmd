@@ -1,0 +1,154 @@
+---
+title: "google_cert_r"
+description: "Code samples from the Google data analytics cert"
+author: "Wes W."
+date: "2021-06-19"
+output: html_notebook
+---
+
+```{r necessary packages}
+install.packages('tidyverse')
+install.packages('palmerpenguins')
+```
+
+```{r load packages}
+library(tidyverse)
+library(palmerpenguins)
+```
+
+The cert course focuses on using ggplot2 for creating visualizations on data. ggplot2 is apart of the 'tidyverse' set of packages, so it's included already tidyverse.
+
+The datasets being used are 'palmerpenguins' which is included in 'tidyverse' and is often used for teaching the foundations of data cleaning/manipulation and plotting in R. Another dataset is 'diamonds' which is included in the 'ggplot2' pacakge.  'ggplot2' is included in 'tidyverse'.
+
+Basic construct for plots is **data** then (+) **geom** then (+) **aesthetics** then (+) **facets**. The *+* allows for chaining layers for the plot.
+
+ggplot2 has a great [cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf).
+
+### Basic empty plot
+```{r starting point for plot - renders nothing; just loads data}
+ggplot(data=penguins)
+```
+
+### Add a layer for rendering data with a geom
+```{r load data and add geom layer}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=bill_length_mm, y=bill_depth_mm))
+```
+
+Here, the *aes()* is for defining the aesthetic for the plot. *geom_point* is the geom adding to the plot.  
+
+```{r add color to the plot - variable in different colors}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, color=species))
+```
+
+Here, ggplot will automatically colorize the plot just by adding the color attribute to *aes()*
+
+```{r add a shape to plot - variable as a shape}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, shape=species))
+```
+
+```{r do more with aesthetics - add color, size, and shape for the data points}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, shape=species, color=species, size=species))
+```
+
+```{r use the alpha paramter to give gradient to the data points}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, alpha=species))
+```
+
+Colors can also be defined directly
+```{r set the color directly}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, alpha=species), color="orange")
+```
+
+Geoms can be combined because they are simply layered with each other onto the plot
+```{r combined plot with two geoms}
+ggplot(data=penguins) + 
+  geom_smooth(mapping=aes(x=flipper_length_mm, y=body_mass_g)) +
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g))
+```
+
+Bar chart is a common graph.  This is how it's coded in R.
+```{r plot with bar chart geom}
+ggplot(data=diamonds) + 
+  geom_bar(mapping=aes(x=cut, fill=cut))
+```
+
+Setting *fill* to a data point will enable geom_bar to select colors automatically for each data point.
+
+```{r plot with bar chart geom different data point}
+ggplot(data=diamonds) + 
+  geom_bar(mapping=aes(x=cut, fill=clarity))
+```
+
+## Facets
+Facets are subsets or sub-groupings of the entire dataset. By specifying the data point to be a facet, ggplot2 will automatically split/sub-divide the dataset. A facet is added just like any other layer, with the *+* character.
+
+There are two types of facets: *facet_wrap()* and *facet_grid()*.
+
+Using *facet_wrap()*
+```{r adding a facet to penguins}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, color=species)) +
+  facet_wrap(~species)
+```
+
+```{r adding a facet to diamonds}
+ggplot(data=diamonds) + 
+  geom_bar(mapping=aes(x=color,fill=cut)) +
+  facet_wrap(~cut)
+```
+
+Using *facet_grid()*
+```{r adding facet to penguins }
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g,color=species)) +
+  facet_grid(species~sex)
+```
+
+## Annotations
+Adding annotations will create another layer with extra information such as title, callouts etc
+
+Adding title and citation information can be added with *labs()*.
+
+```{r plot with labeling}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, color=species)) +
+  labs(title="Palmer Penguins: Body Mass vs. Flipper Length", 
+       subtitle="Sample of 3 peaguin species",
+       caption="Data collected by Dr. Kristen Gorman")
+```
+
+*annotate()* can be used for adding labeling/information inside of the plot itself.
+
+```{r plot with annotation}
+ggplot(data=penguins) + 
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, color=species)) +
+  labs(title="Palmer Penguins: Body Mass vs. Flipper Length", 
+       subtitle="Sample of 3 peaguin species",
+       caption="Data collected by Dr. Kristen Gorman") +
+  annotate("text", x=220, y=3500, label="The Gentoos are the largest", 
+           color="purple", fontface="bold", size=4.5, angle=25)
+```
+
+## Finally
+Of course, all of these plots, data, and layers can be assigned to variables  for reuse
+
+```{r}
+penguin_plot <- ggplot(data=penguins)
+penguin_geom <- geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g, color=species))
+penguin_labs <- labs(title="Palmer Penguins: Body Mass vs. Flipper Length", 
+       subtitle="Sample of 3 peaguin species",
+       caption="Data collected by Dr. Kristen Gorman")
+penguin_annot <- annotate("text", x=220, y=3500, 
+                        label="The Gentoos are the largest", color="purple", 
+                        fontface="bold", size=4.5, angle=25)
+
+penguin_plot + penguin_geom + penguin_labs + penguin_annot
+
+```
+
