@@ -1,9 +1,11 @@
 ---
 title: "google_cert_r"
-description: "Code samples from the Google data analytics cert"
 author: "Wes W."
-date: "2021-06-19"
-output: html_notebook
+date: '2021-06-19'
+output:
+  html_document:
+    df_print: paged
+description: Code samples from the Google data analytics cert
 ---
 
 ```{r necessary packages}
